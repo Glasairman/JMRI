@@ -1,0 +1,30 @@
+JMRI when starting up creates the following session.log message, showing 9.600 bps as the selected speed:
+
+2016-05-22 10:48:06,550 apps.Apps                             INFO  - Starting with profile Davids_Test.3ebd9ed6 [main]
+2016-05-22 10:48:07,217 node.NodeIdentity                     INFO  - Using jmri-B01041236BB9-3ebd9ed6 as the JMRI Node identity [main]
+2016-05-22 10:48:07,339 serialdriver.SerialDriverAdapter      INFO  - /dev/ttyACM0 port opened at 9600 baud, sees  DTR: true RTS: true DSR: false CTS: true  CD: false [main]
+
+However in the profile referred to, the setting is 19,200 bps :
+
+<?xml version="1.0" encoding="UTF-8"?>
+<auxiliary-configuration xmlns="http://www.netbeans.org/ns/auxiliary-configuration/1">
+    <connections xmlns="http://jmri.org/xml/schema/auxiliary-configuration/connections-2-9-6.xsd">
+        <connection xmlns="" class="jmri.jmrix.sprog.sprog.configurexml.ConnectionConfigXml" disabled="no" manufacturer="SPROG DCC" port="/dev/ttyACM0" speed="19,200 bps" systemPrefix="S" userName="SPROG">
+            <options/>
+        </connection>
+    </connections>
+</auxiliary-configuration>
+
+My environment is Ubuntu 16.04 UTS:
+
+david@david-linux:~/JMRI$ uname -a
+Linux david-linux 4.5.0-040500-generic #201603140130 SMP Mon Mar 14 05:32:22 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+Just a thought - I force a /dev/ttyACM0 assignement by creating a UDEV rule. Could it be that udev/rules.d overrides any .xml preferences for the tty?
+I had been getting differing assignments between runs ttyacm0 and ttyacm0, that's why I force it with UDEV.
+
+Here is the rule:
+
+ATTRS{idVendor}=="04d8",ATTR{idProduct}=="fbb3" DRIVERS=="cdc_acm" KERNEL=="ttyACM0" SYMLINK+="SPROG3"
+
+
